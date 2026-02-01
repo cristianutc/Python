@@ -87,3 +87,71 @@ for usuario, datos in usuarios.items():
     print(f"Usuario: {usuario}")
     for clave, valor in datos.items():
         print(f" {clave}: {valor}")
+
+#Modificar un valor en un diccionario
+
+diccionario3 = {
+    "genero": "terror",
+    "nombre": "masacre en texas",
+    "duracion": "2:15:23",
+    "calificacion": 5
+}
+
+diccionario3["nombre"] = "scream"
+print(diccionario3.get("nombre"))
+#modificar todos los valores del diccionario
+# Iterar sobre las claves del diccionario
+for clave in diccionario3:
+    # Cambiar el valor de cada clave
+    if isinstance(diccionario3[clave], int): # Ejemplo: si el valor es un entero
+        diccionario3[clave] += 5 #Aumentar 5 a cada valor entero
+
+#imrpimimos todo para ver donde se hizo el cambio
+for clave, valor in diccionario3.items():
+    print(f"{clave}: {valor}")
+
+# Modificar todos los valores del diccionario
+for clave in diccionario3:
+    diccionario3[clave] = str(diccionario3[clave]).upper() #modificamos los valores las canedenas de texto por mayusculas
+
+for clave, valor in diccionario3.items():
+    print(f"{clave}: {valor}")
+
+# Para convertir todas las claves a mayúsculas
+diccionario3 = {clave.upper(): valor for clave, valor in diccionario3.items()}
+for clave, valor in diccionario3.items():
+    print(f"{clave}: {valor}")
+
+#Cómo cambiar la clave de un diccionario
+diccionario3["pelicula"] = diccionario3.pop("NOMBRE") #como cambiamos las claves a mayusculas le pasamos el argumeto a mayusculas
+#la forma de hacerlo es eliminarlo con pop() y asugnarle un nuevo valor en este caso pelicula
+print(diccionario3)
+
+#eliminar elementos del diccionario
+diccionario4 = {
+    "Nombre": "cris",
+    "Edad": 20,
+    "Ciudad": "mexico",
+    "telefono": 5577843837,
+    "genero": "m"
+}
+
+del diccionario4["genero"]
+for clave, valor in diccionario4.items():
+    print(f"{clave}: {valor}")
+
+# Eliminar y obtener el valor de "edad"
+edad_eliminada = diccionario4.pop("Edad")
+print(diccionario4)
+print("edad eliminada: ",edad_eliminada)
+
+# Eliminar todos los elementos del diccionario
+diccionario4.clear()
+
+print(diccionario4)
+
+# Comprobamos si "nombre" está en el diccionario
+if "nombre" in diccionario3:
+    print("La clave 'nombre' está presente.")
+else:
+    print("La clave 'nombre' no está presente.")
