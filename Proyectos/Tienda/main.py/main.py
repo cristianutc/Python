@@ -1,6 +1,10 @@
-import csv
-import sqlite3
-from datetime import datetime
+import csv  #para crear archivos csv
+import sqlite3 # para crear la coneccion sqlite3
+from datetime import datetime #para importar hora y fecha
+#link para los Documentos
+#https://docs.python.org/3/library/csv.html
+#https://docs.python.org/3/library/sqlite3.html
+#https://docs.python.org/3/library/datetime.html
 
 DB_FILE = "tienda.db"
 con = None
@@ -223,9 +227,14 @@ def ver_productos():
         print(f"{p['id']}. {p['nombre']} - ${p['precio']} (Stock {p['stock']})")
 
 def agregar_producto():
-    nombre = input("Nombre del producto: ").lower()
-    cantidad = int(input("Cantidad a ingresar: "))
-    precio = float(input("Precio unitario: "))
+    while True:
+        try:
+            nombre = input("Nombre del producto: ").lower()
+            cantidad = int(input("Cantidad a ingresar: "))
+            precio = float(input("Precio unitario: "))
+            break
+        except ValueError:
+            print("Porfavor ingrese bien el producto")
 
     productos = cargar_productos()
     for p in productos:
@@ -247,6 +256,7 @@ def agregar_producto():
 def eliminar_producto():
     ver_productos()
     nombre = input("Ingrese el nombre exacto del producto a eliminar: ").lower()
+    
     productos = cargar_productos()
     for p in productos:
         if p["nombre"] == nombre:
