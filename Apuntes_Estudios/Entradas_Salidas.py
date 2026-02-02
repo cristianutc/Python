@@ -42,4 +42,26 @@ try:
     print(f"Tienes {juegos} juegos.")
 except ValueError:
     print(f"¡Eso no es un numero valido! {nombre}")
- 
+
+#Entrada de múltiples valores
+#Si necesitas que el usuario ingrese múltiples valores en una sola línea, puedes usar split() para dividir una cadena en una lista. 
+entrada = input("Ingresa dos números separados por espacio: ")
+numeros = entrada.split()  # Divide la entrada por espacios, creando una lista
+numero1 = int(numeros[0])
+numero2 = int(numeros[1])
+
+print(f"La suma es: {numero1 + numero2}")
+
+
+#Entrada con validación de datos
+#A veces es necesario validar la entrada del usuario antes de usarla. Aquí tienes un ejemplo de cómo hacerlo con un ciclo while 
+# para asegurarte de que el usuario ingrese un número entero:
+
+while True:
+    try:
+        numero = int(input("Ingresa un número entero: "))
+        break  # Salir del ciclo si la entrada es válida
+    except ValueError:
+        print("Eso no es un número entero, intenta de nuevo.")
+
+print(f"Has ingresado el número {numero}.")
