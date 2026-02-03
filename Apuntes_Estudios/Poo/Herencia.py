@@ -8,9 +8,10 @@ menudo “extender una clase”."""
 #Para indicar que una clase hereda de otra se coloca el nombre de la cla-
 #se de la que se hereda entre paréntesis después del nombre de la clase:
 
-class Instrumentos:
-    def __init__(self, precio):
+class Instrumentos: #clase
+    def __init__(self, precio, marca):
         self.precio = precio
+        self.marca = marca
 
     def tocar(self):
         print("Estamos tocando")
@@ -19,22 +20,19 @@ class Instrumentos:
         print("Eso lo pagas tu")
         print("Son", self.precio, "$$$")
 
-class Bateria(Instrumentos):
-    def __init__(self, precio, tambores):
-        super().__init__(precio)
+class Bateria(Instrumentos): #sub clase
+    def __init__(self, precio, marca, tambores):
+        super().__init__(precio, marca)
         self.tambores = tambores
-        print(tambores, "Tambores")
 
     def redoble(self):
-        print("Redoble de tambores")
-        print("ratataatatata")
+        return "Redoble de tambores\nratataatatata" # -> retornamos el valor para pode imprimir
     pass
 
-class Guitarra(Instrumentos):
-     def __init__(self, precio, cuerdas):
-         super().__init__(precio)
+class Guitarra(Instrumentos): # sub clase
+     def __init__(self, precio, marca, cuerdas):
+         super().__init__(precio, marca)
          self.cuerdas = cuerdas
-         print(cuerdas, "Cuerdas de titanio")
      pass
 
 """Como Bateria y Guitarra heredan de Instrumento, ambos tienen un
@@ -45,9 +43,19 @@ Bastaría con escribir un nuevo método __init__ para la clase Guitarra
 que se ejecutaría en lugar del __init__ de Instrumentos. Esto es lo que
 se conoce como sobreescribir métodos."""
 
-bateria = Bateria(15000, 20)
-bateria.romper()
-bateria.redoble()
+bateria = Bateria(15000, "yamaha", 20)
+print(bateria.marca)
+print(bateria.precio,"$ Bateria")
+print(bateria.tambores, " Tambores")
+print(bateria.redoble()) # -> en este lo imprimimos porque devulve un return print
+bateria.tocar()
+print("Love mylab")
 
-guitarra = Guitarra(10000, 6)
+
+guitarra = Guitarra(10000, "yamaha", 6)
+print(guitarra.marca)
+print(guitarra.precio, "Guitarra gibson")
+bateria.tocar()
+print("chop suey")
+print(guitarra.cuerdas, " Cuerdas de Titanio")
 guitarra.romper()
