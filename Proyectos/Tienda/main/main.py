@@ -1,36 +1,77 @@
-import csv  #para crear archivos csv
-import sqlite3 # para crear la coneccion sqlite3
-from datetime import datetime #para importar hora y fecha
-#link para los Documentos
+import csv  # Para crear archivos CSV
+import sqlite3  # Para crear la conexión SQLite3
+import os #Para crear carpetas (mkdir)
+from datetime import datetime  # Para importar hora y fecha
+
+#link para la Documentacion de las librerias usadas
 #https://docs.python.org/3/library/csv.html
 #https://docs.python.org/3/library/sqlite3.html
 #https://docs.python.org/3/library/datetime.html
 
-DB_FILE = "tienda.db"
+# Obtener la ruta al directorio donde está el script (main.py)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Definir las rutas correctas para la base de datos y los archivos exportados fuera de main
+# Usamos una ruta relativa para evitar que las carpetas se creen en main
+
+# Definir las rutas para la base de datos y los archivos exportados
+db_dir = os.path.join(script_dir, "DB")  # Ruta donde está la base de datos
+export_dir = os.path.join(script_dir,"Archivos_Excel")  # Ruta para los archivos exportados
+
+# Definir la ruta completa para el archivo de la base de datos
+DB_FILE = os.path.join(db_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/DB/tienda.db")
+ventas_csv_path = os.path.join(export_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/Archivos_Excel/ventas.csv")
+Stock_csv_path = os.path.join(export_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/Archivos_Excel/stock.csv")
+Altas_csv_path = os.path.join(export_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/Archivos_Excel/altas.csv")
+
+# Verificar si la carpeta DB existe, y si no, crearla
+if not os.path.exists(DB_FILE):
+    os.makedirs(DB_FILE)  # Crea la carpeta DB si no existe
+    print(f"Carpeta {DB_FILE} creada.")
+
+# Verificar si la base de datos ya existe
+if not os.path.exists(DB_FILE):
+    print(f"Base de datos no encontrada en: {DB_FILE}. Creando base de datos.")
+    # Si la base de datos no existe, crearla
+    con = sqlite3.connect(DB_FILE)
+    con.close()  # Cerramos la conexión después de crearla
+else:
+    print(f"Base de datos ya existe en: {DB_FILE}")
+
+# Conexión a la base de datos
 con = None
 
+# Función para abrir la conexión con la base de datos
 # ----------------------------
 # Conexión a la base de datos
 # ----------------------------
 def abrir_conexion():
-    global con
-    if con is None:
-        con = sqlite3.connect(DB_FILE)
-    return con
+    global con #global con Aquí se indica que con es una variable global. global le dice a Python que 
+    #la variable con que vamos a modificar dentro de esta función es la misma variable que está definida
+    #en el alcance global del programa (fuera de la función).
+    if con is None: #if con is None: Esta línea evalúa si la variable con es None (es decir, si no ha sido inicializada aún).
+        #Esto es útil porque la conexión a la base de datos solo debe abrirse una vez (para evitar múltiples conexiones abiertas innecesarias).
+        con = sqlite3.connect(DB_FILE) #sqlite3.connect() devuelve un objeto de conexión que se asigna a con. Si la conexión ya estaba abierta, esta línea no se ejecuta.
+    return con #return con Finalmente, la función devuelve el objeto con, que es la conexión a la base de datos.
+#Esto permite que cualquier función que llame a abrir_conexion pueda usar la misma conexión abierta.
 
-def cerrar_conexion():
-    global con
-    if con:
-        con.close()
-        con = None
+def cerrar_conexion(): #Funcion para cerrar la coneccion de la base de datos
+    global con #Aquí, también se indica que con es una variable global. Esto es necesario porque queremos modificar la variable global con (la conexión) dentro de la función. Sin la palabra clave global, Python trataría de crear una nueva variable local dentro de la función.
+    if con: #if con:Esta línea verifica si con tiene un valor que no sea None.Si con tiene un valor (es decir, si la conexión está abierta), la condición se cumple y se ejecuta el siguiente bloque de código.Si la conexión ya está cerrada (es decir, con es None), la condición no se cumple y no hace nada.
+        con.close() #con.close()Si la conexión está abierta, esta línea cierra la conexión a la base de datos. con.close() es un método del objeto de conexión de SQLite que cierra la conexión a la base de datos.Después de ejecutar esta línea, la conexión ya no estará activa y no se podrán ejecutar más consultas hasta que se abra una nueva conexión.
+        con = None #Esta línea asegura que la variable con sea None después de cerrar la conexión.Esto es útil para que el programa sepa que no hay una conexión abierta. Si más tarde intentamos usar con sin haberla reabierto, sabremos que la conexión no está activa.Establecer con a None también ayuda a evitar que accidentalmente se intente usar una conexión cerrada.
 # ----------------------------
 # Exportar ventas a excel
 # ----------------------------
 
 def exportar_ventas_excel():
-    con = sqlite3.connect("tienda.db")
-    cur = con.cursor()
+    con = sqlite3.connect(DB_FILE) # nos conectamos a la base de datos
+    cur = con.cursor() #Este método se usa para crear un cursor de base de datos, que es un objeto que 
+    #permite interactuar con la base de datos. El cursor se utiliza para ejecutar consultas SQL y manipular los datos en la base de datos.
 
+#El método execute() del cursor se usa para ejecutar consultas SQL dentro de la base de datos.
+#Puedes usar execute() para ejecutar cualquier tipo de consulta: SELECT, INSERT, UPDATE, DELETE, etc.
+#Este método toma una cadena de texto que contiene la consulta SQL.
     cur.execute("""
         SELECT 
             v.fecha,
@@ -42,44 +83,71 @@ def exportar_ventas_excel():
         JOIN productos p ON v.producto_id = p.id
         ORDER BY v.fecha
     """)
+    
+    """SELECT: Selecciona las columnas que quieres obtener de la base de datos.
+v.fecha: La fecha de la venta (de la tabla ventas).
+p.nombre: El nombre del producto (de la tabla productos).
+v.cantidad: La cantidad de productos vendidos (de la tabla ventas).
+v.precio_unitario: El precio por unidad del producto (de la tabla ventas).
+v.total: El total de la venta (de la tabla ventas)."""
 
-    with open("ventas.csv", "w", newline="", encoding="utf-8") as archivo:
+    """FROM ventas v: Indica que los datos provienen de la tabla ventas, y le asigna un alias v para 
+    hacer referencia a ella más fácilmente. JOIN productos p ON v.producto_id = p.id: Realiza un 
+    JOIN entre la tabla ventas y la tabla productos, de manera que las filas de la tabla ventas se 
+    emparejan con las filas correspondientes de la tabla productos basándose en la relación entre el 
+    campo producto_id en ventas y el campo id en productos. ORDER BY v.fecha: Ordena los resultados 
+    de la consulta por la fecha de la venta (de la tabla ventas), para que las ventas más recientes 
+    o antiguas se muestren primero, dependiendo de la dirección del orden."""
+
+# Usar la carpeta Exportados y crear el archivo en esa ubicación
+    with open(ventas_csv_path, "w", newline="", encoding="utf-8") as archivo: #Abre un archivo y lo cierra automáticamente cuando se sale del bloque with open()
+        #ventas_csv_path:Es la ruta al archivo CSV donde se guardarán los datos exportados
+        #"W":Indica que el archivo se abrirá en modo escritura (es decir, se sobrescribirá si ya existe un archivo con el mismo nombre).
+        #newline="": Esto se usa para controlar cómo se gestionan los saltos de línea en los archivos CSV. asegura que Python maneje correctamente los saltos de línea en plataformas cruzadas (Windows, Linux, etc.).
+        #encoding="utf-8": Especifica que el archivo se guardará con codificación UTF-8, que es una codificación estándar y compatible con caracteres especiales (como acentos, símbolos, etc.).
         writer = csv.writer(archivo)
+        #writer = csv.writer(archivo)
+        #Aquí estamos creando un escritor de CSV con el módulo csv de Python.csv.writer(archivo): 
+        # Crea un objeto que puede escribir datos en el archivo abierto (archivo). Este objeto se usará para escribir las filas y encabezados en el archivo CSV.
         writer.writerow(["Fecha", "Producto", "Cantidad", "Precio Unitario", "Total"])
+        #writer.writerow([...]): Escribe una fila en el archivo CSV. En este caso, la fila escrita es 
+        # el encabezado de las columnas en el archivo CSV.
         writer.writerows(cur.fetchall())
+        #cur.fetchall(): Recupera todos los resultados de la consulta SQL ejecutada previamente (la consulta SELECT).
 
-    con.close()
+    con.close() #Cierra la conexión a la base de datos. Es una buena práctica cerrar la conexión 
+    #cuando ya no la necesites, para liberar los recursos del sistema.
     print(" Archivo ventas.csv generado (abrir con Excel)")
 
 # ----------------------------
 # Exportar stock a excel
 # ----------------------------
 
-def exportar_stock_excel():
-    con = sqlite3.connect("tienda.db")
-    cur = con.cursor()
-
+def exportar_stock_excel(): #funcion para exportar archivos csv
+    con = sqlite3.connect(DB_FILE) #nos conectamos DB donde se eucuentra ubicado el archivo 
+    cur = con.cursor() #para hacer consultas sql
+    
     cur.execute("""
         SELECT nombre, precio, stock
         FROM productos
         ORDER BY nombre
-    """)
+    """) #ejecutamos la consulta
 
-    with open("stock.csv", "w", newline="", encoding="utf-8") as archivo:
-        writer = csv.writer(archivo)
-        writer.writerow(["Producto", "Precio", "Stock"])
-        writer.writerows(cur.fetchall())
+    with open(Stock_csv_path, "w", newline="", encoding="utf-8") as archivo: #se abre archivo de manera controlada
+        writer = csv.writer(archivo) #creamos el archivo csv
+        writer.writerow(["Producto", "Precio", "Stock"]) #Escribe una fila en el archivo CSV. (encabezado)
+        writer.writerows(cur.fetchall()) #Recupera todos los resultados de la consulta SQL ejecutada previamente (la consulta SELECT).
 
-    con.close()
+    con.close() #Cierra la conexion a la base de datos
     print(" Archivo stock.csv generado (abrir con Excel)")
 
 # ----------------------------
 # Exportar ingresos/altas a excel
 # ----------------------------
 
-def exportar_altas_excel():
-    con = sqlite3.connect("tienda.db")
-    cur = con.cursor()
+def exportar_altas_excel(): #funcion para exportar archivos csv
+    con = sqlite3.connect(DB_FILE) #nos conectamos DB donde se eucuentra ubicado el archivo 
+    cur = con.cursor() #para hacer consultas sql
 
     cur.execute("""
         SELECT 
@@ -90,21 +158,23 @@ def exportar_altas_excel():
         FROM altas a
         JOIN productos p ON a.producto_id = p.id
         ORDER BY a.fecha
-    """)
+    """) #ejecutamos la consulta
 
-    with open("altas.csv", "w", newline="", encoding="utf-8") as archivo:
-        writer = csv.writer(archivo)
-        writer.writerow(["Fecha", "Producto", "Cantidad", "Precio Unitario"])
-        writer.writerows(cur.fetchall())
+    with open(Altas_csv_path, "w", newline="", encoding="utf-8") as archivo: #se abre archivo de manera controlada
+        writer = csv.writer(archivo) #creamos el archivo csv
+        writer.writerow(["Fecha", "Producto", "Cantidad", "Precio Unitario"]) #Escribe una fila en el archivo CSV. (encabezado)
+        writer.writerows(cur.fetchall()) #Recupera todos los resultados de la consulta SQL ejecutada previamente (la consulta SELECT).
 
-    con.close()
+    con.close() #Cierra la conexion a la base de datos
     print(" Archivo altas.csv generado (abrir con Excel)")
 
 # ----------------------------
 # Exportar todo a excel
 # ----------------------------
 
-def exportar_todo_excel():
+def exportar_todo_excel(): #funcion para exportar todos los archivos csv 
+    con = sqlite3.connect(DB_FILE) #nos conectamos DB donde se eucuentra ubicado el archivo 
+    #solo llamamos todas las funciones creadas para exportar archivos csv
     exportar_ventas_excel()
     exportar_stock_excel()
     exportar_altas_excel()
@@ -114,9 +184,9 @@ def exportar_todo_excel():
 # ----------------------------
 # Crear tablas
 # ----------------------------
-def crear_tablas():
-    con = abrir_conexion()
-    cur = con.cursor()
+def crear_tablas(): #esta funcion es para crear tablas sql
+    con = abrir_conexion() #abrimos coneccion para crear la DB
+    cur = con.cursor() #para ejecutar sql y crear la DB
     cur.execute("""
     CREATE TABLE IF NOT EXISTS productos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -124,7 +194,8 @@ def crear_tablas():
         precio REAL,
         stock INTEGER
     )
-    """)
+    """) #ejecutamos la consulta y creamos la tabla productos
+    #hacemos otra ejecucion
     cur.execute("""
     CREATE TABLE IF NOT EXISTS ventas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -135,7 +206,8 @@ def crear_tablas():
         total REAL,
         FOREIGN KEY(producto_id) REFERENCES productos(id)
     )
-    """)
+    """) #Creamos la tabla ventas
+    #hacemos otra ejecucion
     cur.execute("""
     CREATE TABLE IF NOT EXISTS altas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -145,7 +217,7 @@ def crear_tablas():
         precio_unitario REAL,
         FOREIGN KEY(producto_id) REFERENCES productos(id)
     )
-    """)
+    """) #ejecutamos la consulta y creamos la tabla altas
     cur.execute("""
     CREATE TABLE IF NOT EXISTS merma (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -476,6 +548,7 @@ def menu():
 
 def menu_exportaciones():
     while True:
+        
         print("\n===== EXPORTAR A EXCEL =====")
         print("1. Exportar ventas a Excel")
         print("2. Exportar stock a Excel")
