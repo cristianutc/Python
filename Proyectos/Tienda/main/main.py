@@ -2,37 +2,52 @@ import csv  # Para crear archivos CSV
 import sqlite3  # Para crear la conexión SQLite3
 import os #Para crear carpetas (mkdir)
 from datetime import datetime  # Para importar hora y fecha
-
+import bcrypt  # Para encriptar contraseñas de forma segura
 #link para la Documentacion de las librerias usadas
 #https://docs.python.org/3/library/csv.html
 #https://docs.python.org/3/library/sqlite3.html
 #https://docs.python.org/3/library/datetime.html
+
+
+import bcrypt
+
+# Función para generar el hash de la contraseña
+def hash_password(password):  
+    salt = bcrypt.gensalt()  # Genera un "salt" único para cada contraseña
+    return bcrypt.hashpw(password.encode(), salt).decode()  # Devuelve el hash codificado a texto
+
+# Función para verificar la contraseña
+def check_password(password, hashed):  
+    return bcrypt.checkpw(password.encode(), hashed.encode())  # Compara el hash con la contraseña ingresada
+
 
 # Obtener la ruta al directorio donde está el script (main.py)
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Definir las rutas correctas para la base de datos y los archivos exportados fuera de main
 # Usamos una ruta relativa para evitar que las carpetas se creen en main
-
-# Definir las rutas para la base de datos y los archivos exportados
 db_dir = os.path.join(script_dir, "DB")  # Ruta donde está la base de datos
-export_dir = os.path.join(script_dir,"Archivos_Excel")  # Ruta para los archivos exportados
-
-# Definir la ruta completa para el archivo de la base de datos
-DB_FILE = os.path.join(db_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/DB/tienda.db")
-ventas_csv_path = os.path.join(export_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/Archivos_Excel/ventas.csv")
-Stock_csv_path = os.path.join(export_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/Archivos_Excel/stock.csv")
-Altas_csv_path = os.path.join(export_dir, "/home/pepino/Documentos/Python/Proyectos/Tienda/Archivos_Excel/altas.csv")
+export_dir = os.path.join(script_dir, "Archivos_Excel")  # Ruta para los archivos exportados
 
 # Verificar si la carpeta DB existe, y si no, crearla
-if not os.path.exists(DB_FILE):
-    os.makedirs(DB_FILE)  # Crea la carpeta DB si no existe
-    print(f"Carpeta {DB_FILE} creada.")
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
+    print(f"Carpeta {db_dir} creada.")
+
+# Verificar si la carpeta export_dir existe, y si no, crearla
+if not os.path.exists(export_dir):
+    os.makedirs(export_dir)
+    print(f"Carpeta de exportación {export_dir} creada.")
+
+# Definir la ruta completa para la base de datos y los archivos CSV
+DB_FILE = os.path.join(db_dir, "tienda.db")
+ventas_csv_path = os.path.join(export_dir, "ventas.csv")
+Stock_csv_path = os.path.join(export_dir, "stock.csv")
+Altas_csv_path = os.path.join(export_dir, "altas.csv")
 
 # Verificar si la base de datos ya existe
 if not os.path.exists(DB_FILE):
     print(f"Base de datos no encontrada en: {DB_FILE}. Creando base de datos.")
-    # Si la base de datos no existe, crearla
     con = sqlite3.connect(DB_FILE)
     con.close()  # Cerramos la conexión después de crearla
 else:
@@ -40,24 +55,23 @@ else:
 
 # Conexión a la base de datos
 con = None
-
-# Función para abrir la conexión con la base de datos
 # ----------------------------
 # Conexión a la base de datos
 # ----------------------------
-def abrir_conexion():
+# Función para abrir la conexión con la base de datos
+def abrir_conexion():# Función para abrir la conexión con la base de datos
     global con #global con Aquí se indica que con es una variable global. global le dice a Python que 
     #la variable con que vamos a modificar dentro de esta función es la misma variable que está definida
     #en el alcance global del programa (fuera de la función).
-    if con is None: #if con is None: Esta línea evalúa si la variable con es None (es decir, si no ha sido inicializada aún).
+    if con is None:  # #if con is None: Esta línea evalúa si la variable con es None (es decir, si no ha sido inicializada aún).
         #Esto es útil porque la conexión a la base de datos solo debe abrirse una vez (para evitar múltiples conexiones abiertas innecesarias).
-        con = sqlite3.connect(DB_FILE) #sqlite3.connect() devuelve un objeto de conexión que se asigna a con. Si la conexión ya estaba abierta, esta línea no se ejecuta.
-    return con #return con Finalmente, la función devuelve el objeto con, que es la conexión a la base de datos.
+        con = sqlite3.connect(DB_FILE)  # #sqlite3.connect() devuelve un objeto de conexión que se asigna a con. Si la conexión ya estaba abierta, esta línea no se ejecuta.
+    return con#return con Finalmente, la función devuelve el objeto con, que es la conexión a la base de datos.
 #Esto permite que cualquier función que llame a abrir_conexion pueda usar la misma conexión abierta.
 
 def cerrar_conexion(): #Funcion para cerrar la coneccion de la base de datos
     global con #Aquí, también se indica que con es una variable global. Esto es necesario porque queremos modificar la variable global con (la conexión) dentro de la función. Sin la palabra clave global, Python trataría de crear una nueva variable local dentro de la función.
-    if con: #if con:Esta línea verifica si con tiene un valor que no sea None.Si con tiene un valor (es decir, si la conexión está abierta), la condición se cumple y se ejecuta el siguiente bloque de código.Si la conexión ya está cerrada (es decir, con es None), la condición no se cumple y no hace nada.
+    if con is not None and not con.closed: #if con:Esta línea verifica si con tiene un valor que no sea None.Si con tiene un valor (es decir, si la conexión está abierta), la condición se cumple y se ejecuta el siguiente bloque de código.Si la conexión ya está cerrada (es decir, con es None), la condición no se cumple y no hace nada.
         con.close() #con.close()Si la conexión está abierta, esta línea cierra la conexión a la base de datos. con.close() es un método del objeto de conexión de SQLite que cierra la conexión a la base de datos.Después de ejecutar esta línea, la conexión ya no estará activa y no se podrán ejecutar más consultas hasta que se abra una nueva conexión.
         con = None #Esta línea asegura que la variable con sea None después de cerrar la conexión.Esto es útil para que el programa sepa que no hay una conexión abierta. Si más tarde intentamos usar con sin haberla reabierto, sabremos que la conexión no está activa.Establecer con a None también ayuda a evitar que accidentalmente se intente usar una conexión cerrada.
 # ----------------------------
@@ -65,7 +79,7 @@ def cerrar_conexion(): #Funcion para cerrar la coneccion de la base de datos
 # ----------------------------
 
 def exportar_ventas_excel():
-    con = sqlite3.connect(DB_FILE) # nos conectamos a la base de datos
+    con = abrir_conexion() # nos conectamos a la base de datos
     cur = con.cursor() #Este método se usa para crear un cursor de base de datos, que es un objeto que 
     #permite interactuar con la base de datos. El cursor se utiliza para ejecutar consultas SQL y manipular los datos en la base de datos.
 
@@ -115,8 +129,6 @@ v.total: El total de la venta (de la tabla ventas)."""
         writer.writerows(cur.fetchall())
         #cur.fetchall(): Recupera todos los resultados de la consulta SQL ejecutada previamente (la consulta SELECT).
 
-    con.close() #Cierra la conexión a la base de datos. Es una buena práctica cerrar la conexión 
-    #cuando ya no la necesites, para liberar los recursos del sistema.
     print(" Archivo ventas.csv generado (abrir con Excel)")
 
 # ----------------------------
@@ -124,7 +136,7 @@ v.total: El total de la venta (de la tabla ventas)."""
 # ----------------------------
 
 def exportar_stock_excel(): #funcion para exportar archivos csv
-    con = sqlite3.connect(DB_FILE) #nos conectamos DB donde se eucuentra ubicado el archivo 
+    con = abrir_conexion() #nos conectamos DB donde se eucuentra ubicado el archivo 
     cur = con.cursor() #para hacer consultas sql
     
     cur.execute("""
@@ -138,7 +150,6 @@ def exportar_stock_excel(): #funcion para exportar archivos csv
         writer.writerow(["Producto", "Precio", "Stock"]) #Escribe una fila en el archivo CSV. (encabezado)
         writer.writerows(cur.fetchall()) #Recupera todos los resultados de la consulta SQL ejecutada previamente (la consulta SELECT).
 
-    con.close() #Cierra la conexion a la base de datos
     print(" Archivo stock.csv generado (abrir con Excel)")
 
 # ----------------------------
@@ -146,7 +157,7 @@ def exportar_stock_excel(): #funcion para exportar archivos csv
 # ----------------------------
 
 def exportar_altas_excel(): #funcion para exportar archivos csv
-    con = sqlite3.connect(DB_FILE) #nos conectamos DB donde se eucuentra ubicado el archivo 
+    con = abrir_conexion() # Usamos la conexión global 
     cur = con.cursor() #para hacer consultas sql
 
     cur.execute("""
@@ -165,7 +176,6 @@ def exportar_altas_excel(): #funcion para exportar archivos csv
         writer.writerow(["Fecha", "Producto", "Cantidad", "Precio Unitario"]) #Escribe una fila en el archivo CSV. (encabezado)
         writer.writerows(cur.fetchall()) #Recupera todos los resultados de la consulta SQL ejecutada previamente (la consulta SELECT).
 
-    con.close() #Cierra la conexion a la base de datos
     print(" Archivo altas.csv generado (abrir con Excel)")
 
 # ----------------------------
@@ -227,12 +237,79 @@ def crear_tablas(): #esta funcion es para crear tablas sql
         motivo TEXT,
         FOREIGN KEY(producto_id) REFERENCES productos(id)
     )
-    """)
-    con.commit()
+    """) #creamos las tablas merma
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS usuario (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                correo_electronico TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL
+                )
+                """)#creamos la tabla usuario 
+    con.commit() #Guardamos
 
 # ----------------------------
 # Funciones básicas
 # ----------------------------
+
+def registrar_usuario():
+    con = abrir_conexion()
+    cur = con.cursor()
+
+    correo = input("Ingrese su correo electronico:\n")
+    password = input("Ingrese su contraseña: \n")
+
+    # Verificamos si el correo ya existe
+    cur.execute("""
+    SELECT * FROM usuario WHERE correo_electronico = ?
+    """, (correo,))
+    if cur.fetchone():
+        print("Este correo ya está registrado.")
+        return  # Salir si el correo ya está en la base de datos
+
+    password_hash = hash_password(password)  # Generamos el hash de la contraseña
+
+    try:
+        cur.execute("""
+        INSERT INTO usuario (correo_electronico, password)
+        VALUES(?, ?)
+        """, (correo, password_hash))
+        con.commit()
+        print("Usuario registrado exitosamente")
+    except Exception as e:
+        print(f"Error al registrar el usuario: {e}")
+
+def login_o_registro():
+    con = abrir_conexion()
+    cur = con.cursor()
+
+    opcion = input("¿Ya tienes una cuenta? (s/n): ")
+
+    if opcion == "s":
+        correo = input("Correo electronico: \n")
+        password = input("Contraseña: \n")
+
+        cur.execute("""
+        SELECT * FROM usuario WHERE correo_electronico = ?
+        """, (correo,))
+
+        usuario = cur.fetchone()
+
+        if usuario:  # Si el correo existe
+            # El segundo valor en 'usuario' es el hash de la contraseña
+            if check_password(password, usuario[2]):  # Verificamos la contraseña
+                print("Login exitoso")
+                return True
+            else:
+                print("Contraseña incorrecta")
+                return False
+        else:
+            print("Usuario no encontrado")
+            return False
+        
+    else:
+        registrar_usuario()  # Llamamos a la función de registro si el usuario no tiene cuenta
+        return False
+
 def cargar_productos():
     con = abrir_conexion()
     cur = con.cursor()
@@ -496,7 +573,6 @@ def historial_completo():
 # Menú principal
 # ----------------------------
 def menu():
-    crear_tablas()
     while True:
         print("\n===== MENU TIENDA =====")
         print("1. Ver productos")
@@ -541,7 +617,7 @@ def menu():
             menu_exportaciones()
         elif op == 11:
             print("Saliendo...")
-            cerrar_conexion()
+            con.close()
             break
         else:
             print("Opción inválida")
@@ -576,4 +652,19 @@ def menu_exportaciones():
             print("Opción inválida")
 
 
-menu()
+def main():
+        # Llamar a la función que crea las tablas antes de hacer login o registro
+    crear_tablas()
+    while True:
+        #Primero ejecutamos login o registro
+        if login_o_registro():
+            #si el login fue exitoso, mostramos el menu
+            menu()
+            break #Salimos del bucle al terminar el menu
+        else:
+            print("Intento fallido. Vuelve a intentar")
+
+    
+
+
+main()
