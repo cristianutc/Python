@@ -9,8 +9,6 @@ import bcrypt  # Para encriptar contraseñas de forma segura
 #https://docs.python.org/3/library/datetime.html
 
 
-import bcrypt
-
 # Función para generar el hash de la contraseña
 def hash_password(password):  
     salt = bcrypt.gensalt()  # Genera un "salt" único para cada contraseña
