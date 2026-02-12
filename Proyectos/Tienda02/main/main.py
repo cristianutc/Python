@@ -15,7 +15,7 @@ def main():
 
 def menu():
     while True:
-        print("\t =======MENU TIENDA01======")
+        print("\t ======= MENU TIENDA CHINA ======")
         print("1. Ver productos")
         print("2. Vender Productos")
         print("3. Buscar Producto")
