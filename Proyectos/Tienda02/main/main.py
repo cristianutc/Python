@@ -130,6 +130,10 @@ DB_FILE = os.path.join(db_dir, "tienda.db")
 Ventas_csv_path = os.path.join(export_dir, "ventas.csv")
 Stock_csv_path = os.path.join(export_dir, "stock.csv")
 Altas_csv_path = os.path.join(export_dir, "altas.csv")
+Resumen_dia_csv_path = os.path.join(export_dir, "resumen_dia.csv")
+Resumen_semana_csv_path = os.path.join(export_dir, "resumen_semana.csv")
+Resumen_mes_csv_path = os.path.join(export_dir, "resumen_mes.csv")
+Resumen_anio_csv_path = os.path.join(export_dir, "resumen_año.csv")
 
 #Verificar si la carpeta DB existe, si no crearla
 if not os.path.exists(db_dir):
@@ -241,7 +245,7 @@ def crear_tablas():
         CREATE TABLE IF NOT EXISTS resumen_mes (
                    anio_mes TEXT,
                     producto_id INTEGER,
-                    caantidad_total INTEGER,
+                    cantidad_total INTEGER,
                     ingreso_total REAL,
                     PRIMARY KEY (anio_mes, producto_id) 
                     )
@@ -293,7 +297,7 @@ def registrar_usuario():
 def registrar_venta(producto_id, cantidad, precio_unitario):
     with open_connect() as con:
         cur = con.cursor()
-        fecha = datetime.now().strftime("%Y-%m-%d  %H: %M: %S:")
+        fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         total = cantidad * precio_unitario
         cur.execute("""
         INSERT INTO ventas (fecha, producto_id, cantidad, precio_unitario, total)
@@ -410,18 +414,18 @@ def comprar_productos():
             print("Opcion invalida")
             continue
 
-        productos = productos[op - 1]
+        producto = productos[op - 1]
         try:
             cantidad = int(input("Cantidad: "))
         except ValueError:
             print("Cantidad Invalida")
             continue
 
-        if cantidad > productos["stock"]:
+        if cantidad > producto["stock"]:
             print("No hay suficiente stock")
             continue
 
-        carrito.append({"id": productos["id"], "nombre": productos["nombre"], "cantidad": cantidad, "precio": productos["precio"]})
+        carrito.append({"id": producto["id"], "nombre": producto["nombre"], "cantidad": cantidad, "precio": producto["precio"]})
 
     if not carrito:
         print("No Selecciono Ningun Producto.")
@@ -433,7 +437,7 @@ def comprar_productos():
         total_general += subtotal
         print(f"{item['nombre']} x {item['cantidad']} = ${subtotal}")
 
-    confimar = input(f"Total a Pagar: ${total_general}. \n Confirmar Compra (s/n): ").lower
+    confimar = input(f"Total a Pagar: ${total_general}. \n Confirmar Compra (s/n): ").lower()
 
     if confimar != "s":
         print("Compra Cancelada")
@@ -509,7 +513,7 @@ def eliminar_productos():
         if p["nombre"]  == nombre:
             with open_connect() as con:
                 cur = con.cursor()
-                cur.execute("DDELTE FROM productos WHERE id = ?", (p["id"]))
+                cur.execute("DELETE FROM productos WHERE id = ?", (p["id"],))
                 con.commit()
                 registrar_merma(p["id"], p["stock"], "Eliminacion de producto.")
                 print(f"Producto '{nombre}' Eliminado.")
@@ -597,7 +601,7 @@ def exportar_ventas_excel():
                     p.nombre,
                     v.cantidad,
                     v.precio_unitario,
-                    v,total
+                    v.total
                     FROM ventas v
                     JOIN productos p ON v.producto_id = p.id
                     ORDER BY v.fecha
@@ -613,7 +617,7 @@ def exportar_stock_excel():
     with open_connect() as con:
         cur = con.cursor()
         cur.execute("""
-        SELECT nombre, PRECIO, stock
+        SELECT nombre AS producto, precio, stock
                     FROM productos
                     ORDER BY nombre
                     """)
@@ -629,23 +633,24 @@ def exportar_altas_excel():
     with open_connect() as con:
         cur = con.cursor()
         cur.execute("""
-        SELECT 
-            a.fecha,
-            p.nombre,
-            a.cantidad,
-            a.precio_unitario
-        FROM altas a
-        JOIN productos p ON a.producto_id = p.id
-        ORDER BY a.fecha
-    """) 
+            SELECT 
+                a.fecha,
+                p.nombre AS producto,
+                a.cantidad,
+                a.precio_unitario
+            FROM altas a
+            JOIN productos p ON a.producto_id = p.id
+            ORDER BY a.fecha
+        """)
 
-    with open(Altas_csv_path, "w", newline="", encoding="utf-8") as archivo: #se abre archivo de manera controlada
-        writer = csv.writer(archivo) #creamos el archivo csv
-        writer.writerow(["Fecha", "Producto", "Cantidad", "Precio Unitario"]) #Escribe una fila en el archivo CSV. (encabezado)
-        writer.writerows(cur.fetchall()) #Recupera todos los resultados de la consulta SQL ejecutada previamente (la consulta SELECT).
+        with open(Altas_csv_path, "w", newline="", encoding="utf-8") as archivo:
+            writer = csv.writer(archivo)
+            writer.writerow(["Fecha", "Producto", "Cantidad", "Precio Unitario"])
+            writer.writerows(cur.fetchall())
 
-    print(" Archivo altas.csv generado (abrir con Excel)")
+    print("Archivo altas.csv generado (abrir con Excel)")
 
+# esta funcion ya no la ocupamos ya que mas abajo lo exportamos todo junto los resumen dia, mes, etc... usando loop
 def exportar_resumen_dia():
     with open_connect() as con:
         cur = con.cursor()
@@ -672,30 +677,41 @@ def exportar_todo_excel(): #funcion para exportar todos los archivos csv
 def exportar_todo_resumen():
     # Cada elemento es una tupla de 2 valores
     tablas = [
-        ("resumen_dia", "resumen_dia.csv"),
-        ("resumen_semana", "resumen_semana.csv"),
-        ("resumen_mes", "resumen_mes.csv"),
-        ("resumen_anio", "resumen_anio.csv")
+        ("resumen_dia", Resumen_dia_csv_path),
+        ("resumen_semana", Resumen_semana_csv_path),
+        ("resumen_mes", Resumen_mes_csv_path),
+        ("resumen_anio", Resumen_anio_csv_path)
     ]
-    #conectas a la DB
-    with open_connect() as con:
-        cur = con.cursor() #variable para ejecutar comandos sql
-        #for desempaqueta autamaticamente cada tupla
-        for nombre_tabla, nombre_archivo in tablas:
 
-            cur.execute(f"SELECT * FROM {nombre_tabla}") #ejecutamos sql y usamos plantilla para pasar el nombre de la tabla
-            datos = cur.fetchall() #guardamos la consulta en una variable llamada datos con fetchall
-            #abrimos archivo con with
-            with open(nombre_archivo, "w", newline="", encoding="utf-8") as archivo:
+    # Conectamos a la DB
+    with open_connect() as con:
+        cur = con.cursor()  # variable para ejecutar comandos SQL
+
+        # Loop por cada tabla y su archivo
+        for nombre_tabla, ruta_archivo in tablas:
+            # Query con JOIN para traer el nombre del producto
+            cur.execute(f"""
+                SELECT
+                    r.*,
+                    p.nombre AS producto
+                FROM {nombre_tabla} r
+                JOIN productos p ON r.producto_id = p.id
+            """)
+            datos = cur.fetchall()  # <-- Guardamos la query en la variable datos
+
+            # Abrimos archivo CSV
+            with open(ruta_archivo, "w", newline="", encoding="utf-8") as archivo:
                 writer = csv.writer(archivo)
 
-                #Encabezados automaticos
+                # Encabezados automáticos
                 columnas = [descripcion[0] for descripcion in cur.description]
                 writer.writerow(columnas)
 
+                # Escribimos los datos
                 writer.writerows(datos)
 
-                print(f"{nombre_archivo} Exportado Correctamente.")
+            print(f"{ruta_archivo} Exportado Correctamente.")
+
 
 
 #-------------------------
@@ -731,7 +747,7 @@ def actualizar_resumen():
         INSERT INTO resumen_anio (anio, producto_id, cantidad_total, ingreso_total)
                     SELECT strftime('%Y', fecha), producto_id, SUM(cantidad), SUM(total)
                     FROM ventas
-                    GROUP BY strftime('%Y', frcha), producto_id
+                    GROUP BY strftime('%Y', fecha), producto_id
                     """)
         con.commit()
         print("Rsumen Actualizado Correctamente")
