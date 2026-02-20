@@ -47,6 +47,6 @@ with open(ruta_archivo2, "r", encoding="utf-8") as archivo2:
 
 # 3 Otra forma más eficiente: leer línea por línea con un bucle for
 print("\nUsando bucle for directamente:")
-with open(ruta_archivo, "r", encoding="utf-8") as archivo:
-    for linea in archivo:
+with open(ruta_archivo2, "r", encoding="utf-8") as archivo2:
+    for linea in archivo2:
         print(linea.strip())

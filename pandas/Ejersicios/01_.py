@@ -43,3 +43,14 @@ print("\t Ventas de menor a mayor")
 print(tabla.sort_values("Ventas", ascending=True))
 
 # ¿Cómo obtendrías el vendedor con MAYOR total de ventas?
+
+total = tabla.groupby(["Vendedor", "Ciudad"])["Ventas"] \
+    .sum() \
+    .reset_index() 
+
+mayor_vendedor = total.loc[total["Ventas"].idxmax()]
+
+print("\t El vendedor con mayor ventas")
+print(mayor_vendedor)
+
+print(tabla.groupby("Vendedor")["Ventas"].sum().idxmax())
