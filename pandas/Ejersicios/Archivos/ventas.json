@@ -1,0 +1,25 @@
+[
+  {"Vendedor": "Ana", "Ciudad": "CDMX", "Ventas": 120, "Mes": "Enero"},
+  {"Vendedor": "Luis", "Ciudad": "Madrid", "Ventas": 200, "Mes": "Enero"},
+  {"Vendedor": "Pedro", "Ciudad": "Lima", "Ventas": 300, "Mes": "Enero"},
+  {"Vendedor": "Sofia", "Ciudad": "Bogotá", "Ventas": 150, "Mes": "Enero"},
+  {"Vendedor": "Carlos", "Ciudad": "Buenos Aires", "Ventas": 180, "Mes": "Enero"},
+  
+  {"Vendedor": "Ana", "Ciudad": "CDMX", "Ventas": 220, "Mes": "Febrero"},
+  {"Vendedor": "Luis", "Ciudad": "Madrid", "Ventas": 250, "Mes": "Febrero"},
+  {"Vendedor": "Pedro", "Ciudad": "Lima", "Ventas": 400, "Mes": "Febrero"},
+  {"Vendedor": "Sofia", "Ciudad": "Bogotá", "Ventas": 190, "Mes": "Febrero"},
+  {"Vendedor": "Carlos", "Ciudad": "Buenos Aires", "Ventas": 210, "Mes": "Febrero"},
+  
+  {"Vendedor": "Ana", "Ciudad": "CDMX", "Ventas": 180, "Mes": "Marzo"},
+  {"Vendedor": "Luis", "Ciudad": "Madrid", "Ventas": 270, "Mes": "Marzo"},
+  {"Vendedor": "Pedro", "Ciudad": "Lima", "Ventas": 350, "Mes": "Marzo"},
+  {"Vendedor": "Sofia", "Ciudad": "Bogotá", "Ventas": 230, "Mes": "Marzo"},
+  {"Vendedor": "Carlos", "Ciudad": "Buenos Aires", "Ventas": 260, "Mes": "Marzo"},
+  
+  {"Vendedor": "Ana", "Ciudad": "CDMX", "Ventas": 300, "Mes": "Abril"},
+  {"Vendedor": "Luis", "Ciudad": "Madrid", "Ventas": 310, "Mes": "Abril"},
+  {"Vendedor": "Pedro", "Ciudad": "Lima", "Ventas": 420, "Mes": "Abril"},
+  {"Vendedor": "Sofia", "Ciudad": "Bogotá", "Ventas": 280, "Mes": "Abril"},
+  {"Vendedor": "Carlos", "Ciudad": "Buenos Aires", "Ventas": 290, "Mes": "Abril"}
+]
