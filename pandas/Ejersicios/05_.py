@@ -95,11 +95,7 @@ sopa_count = df["title"].str.contains("sopa", case=False, na=False).sum()
 print(f"Recetas de sopa: {sopa_count}")
 
 """Ejercicios extra (intermedio)
-
 Crear un DataFrame con recetas que tengan menos de 5 ingredientes
-
 Crear un DataFrame de recetas que contengan “arroz” o “pollo”
-
 Ordenar recetas alfabéticamente por título
-
 Contar cuántas recetas tienen la palabra “sopa” en el título"""
