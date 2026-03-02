@@ -8,15 +8,21 @@ from pathlib import Path
 import csv
 import os
 from tkinter import ttk
+from db import export_dir
 
-#Obtener ruta al directorio donde esta el script (main)
-scrip_dir = Path(__file__).resolve().parent
-export_dir = scrip_dir / "Archivos_Excel"
-#Cremos los archivos csv
-ventas_csv = export_dir / "ventas.csv"
-stock_csv = export_dir / "stock.csv"
-altas_csv = export_dir / "altas.csv"
-merma_csv = export_dir / "merma.csv"
+APP_NAME = "MiTienda"
+
+base_dir = os.path.join(os.environ["LOCALAPPDATA"], APP_NAME)
+db_dir = os.path.join(base_dir, "DB")
+export_dir = os.path.join(base_dir, "Archivos_Excel")
+
+os.makedirs(db_dir, exist_ok=True)
+os.makedirs(export_dir, exist_ok=True)
+
+ventas_csv = Path(export_dir) / "ventas.csv"
+stock_csv = Path(export_dir) / "stock.csv"
+altas_csv = Path(export_dir) / "altas.csv"
+merma_csv = Path(export_dir) / "merma.csv"
 
 #Verificar si la carpeta Aerchivos_Excel existe, si no crearla
 if not os.path.exists(export_dir):
@@ -551,10 +557,12 @@ def exportar_merma_excel():
     print("Archivo merma.csv generado (abrir con Excel)")
 
 # Rutas de exportación
-Resumen_dia_csv_path = export_dir / "resumen_dia.csv"
-Resumen_semana_csv_path = export_dir / "resumen_semana.csv"
-Resumen_mes_csv_path = export_dir / "resumen_mes.csv"
-Resumen_anio_csv_path = export_dir / "resumen_anio.csv"
+
+Resumen_dia_csv_path = Path(export_dir) / "resumen_dia.csv"
+Resumen_semana_csv_path = Path(export_dir) / "resumen_semana.csv"
+Resumen_mes_csv_path = Path(export_dir) / "resumen_mes.csv"
+Resumen_anio_csv_path = Path(export_dir) / "resumen_anio.csv"
+
 
 def mostrar_resumen_ventas(root):
     """Ventana de Resumen de Ventas interactiva con menú desplegable para productos"""

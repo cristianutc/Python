@@ -1,4 +1,5 @@
 import tkinter as tk
+from db import export_dir
 from tkinter import messagebox
 from assets.db import open_connect
 import bcrypt
