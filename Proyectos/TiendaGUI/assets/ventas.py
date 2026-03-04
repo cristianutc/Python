@@ -8,16 +8,16 @@ from pathlib import Path
 import csv
 import os
 from tkinter import ttk
-from db import export_dir
+from .db import export_dir
 
-APP_NAME = "MiTienda"
+#Obtener ruta al directorio donde esta el script (main)
+script_dir = Path(__file__).resolve().parent
 
-base_dir = os.path.join(os.environ["LOCALAPPDATA"], APP_NAME)
-db_dir = os.path.join(base_dir, "DB")
-export_dir = os.path.join(base_dir, "Archivos_Excel")
+db_dir = script_dir / "DB" # Ruta de la DB
+export_dir = script_dir / "Archivos_Excel" # Ruta para los Archivos Exportados
 
-os.makedirs(db_dir, exist_ok=True)
-os.makedirs(export_dir, exist_ok=True)
+#Definir la ruta completa para la base de datos y los archivos excel
+DB_FILE = db_dir / "tienda.db"
 
 ventas_csv = Path(export_dir) / "ventas.csv"
 stock_csv = Path(export_dir) / "stock.csv"

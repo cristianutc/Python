@@ -1,6 +1,6 @@
 import tkinter as tk
-from db import export_dir
 from tkinter import messagebox
+from .db import export_dir
 from assets.db import open_connect
 import bcrypt
 from assets.ventas import ver_productos

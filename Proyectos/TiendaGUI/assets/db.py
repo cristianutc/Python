@@ -1,23 +1,19 @@
 import os
 import sqlite3
 from contextlib import contextmanager
-from db import export_dir
+from pathlib import Path
 
-# -------------------------------
-# Carpeta fija en AppData
-# -------------------------------
+#Obtener ruta al directorio donde esta el script (main)
+script_dir = Path(__file__).resolve().parent
 
-APP_NAME = "MiTienda"
+db_dir = script_dir / "DB" # Ruta de la DB
+export_dir = script_dir / "Archivos_Excel" # Ruta para los Archivos Exportados
 
-base_dir = os.path.join(os.environ["LOCALAPPDATA"], APP_NAME)
-db_dir = os.path.join(base_dir, "DB")
-export_dir = os.path.join(base_dir, "Archivos_Excel")
-
-os.makedirs(db_dir, exist_ok=True)
-os.makedirs(export_dir, exist_ok=True)
-
-DB_FILE = os.path.join(db_dir, "tienda.db")
-
+#Definir la ruta completa para la base de datos y los archivos excel
+DB_FILE = db_dir / "tienda.db"
+Ventas_csv_path = export_dir / "ventas.csv"
+Stock_csv_path = export_dir / "stock.csv"
+Altas_csv_path = export_dir / "altas.csv"
 
 # -------------------------------
 # Context manager para la DB
