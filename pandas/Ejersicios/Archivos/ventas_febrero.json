@@ -1,0 +1,7 @@
+[
+    {"fecha": "2026-02-02", "producto": "Laptop", "categoria": "Electronica", "cantidad": 1, "precio": 1200},
+    {"fecha": "2026-02-08", "producto": "Mouse", "categoria": "Electronica", "cantidad": 8, "precio": 25},
+    {"fecha": "2026-02-14", "producto": "Silla", "categoria": "Oficina", "cantidad": 2, "precio": 150},
+    {"fecha": "2026-02-18", "producto": "Monitor", "categoria": "Electronica", "cantidad": 3, "precio": 400},
+    {"fecha": "2026-02-25", "producto": "Escritorio", "categoria": "Oficina", "cantidad": 2, "precio": 300}
+]
