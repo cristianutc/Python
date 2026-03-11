@@ -16,7 +16,7 @@ objetos Python, etc.). El eje Las etiquetas se denominan colectivamente
 # s = pd.Series(data, index=index)
 
 # Aici, data pueden ser muchas cosas diferentes:
-# Eun dictado de Python
+# Es un dictado de Python
 # un ndarray
 # un valor escalar (como 5)
 # El pasado índice es una lista de etiquetas de ejes. El comportamiento del constructor depende de datos’tipo s:
@@ -27,7 +27,7 @@ s = pd.Series(np.random.randn(5), index=["a", "b", "c", "d", "e"], dtype='str')
 print(s)
 
 # Desde dict
-# Seriesse puede instanciar a partir de dictados:
+# Series puede instanciar a partir de dictados:
 
 d = {
     "b": 1,

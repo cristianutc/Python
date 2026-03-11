@@ -24,3 +24,4 @@ df2 = pd.DataFrame({
 })
 
 print(df2.dtypes)
+print(df2)

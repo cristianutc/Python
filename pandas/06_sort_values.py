@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 #sort_values()
 #Sirve para ordenar filas.
@@ -27,7 +26,7 @@ print(df.sort_values(["Departamento", "Ventas"], ascending=[True, False]))
 # Primero ordena por departamento
 # Dentro de cada departamento ordena por ventas descendente
 
-# Combinando TODO (como en la vida real)
+# Combinando Todo (como en la vida real)
 # Ejemplo típico de análisis:
 # “Quiero ver las ventas totales por departamento en 2024, ordenadas de mayor a menor”
 v_totales = df[df["Año"] == 2024] \

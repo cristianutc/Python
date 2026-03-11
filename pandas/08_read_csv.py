@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 from pathlib import Path 
 
 ruta_del_archivo = Path(__file__).resolve().parent # ruta de nuestro archivo script

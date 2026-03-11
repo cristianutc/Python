@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 # groupby()
 # groupby() se usa para agrupar datos y aplicar una función agregada.

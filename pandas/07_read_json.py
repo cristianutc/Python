@@ -11,7 +11,7 @@ print(df.head()) # primeras 5 filas
 print(df.tail()) # ultimas 5 filas 
 print(df.info()) # muestra estructura, tipos y nulos
 print(df.shape) # tamaño total
-print(df.describe()) #
+print(df.describe()) # describe la informacion de los datos
 
 pd.set_option("display.max_rows", None) # Cambiar configuracion para mostrar todo
 print(df)
