@@ -6,8 +6,7 @@ print(lista) # -> (1,2,3,4,5)
 #como veras en la listas2 imprimimos toda la lista gracias slicing [:]
 #esto quiere decir [principio : fin : paso ]  (exepto el ultimo)
 lista2 = [1,2,3,4,5]
-lista2 = lista2[:]
-print(lista2) # -> [1,2,3,4,5]
+print(lista2[:]) # -> [1,2,3,4,5]
 
 #como veran tambien en una lista podemos guardar csdenas de texto que su vez los
 #caracteres lo representa como una lista y endicamos que imprima del 0:4 excepto el ultimo

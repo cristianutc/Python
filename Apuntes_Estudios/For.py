@@ -11,7 +11,7 @@ multi = 0
 
 for i in range(1,11):
     multi = m * i
-    print("1 x ",i," = ",multi)
+    print(f"1 x {i} = {multi}")
 
 #También puedes personalizar el inicio, el final y el paso con range(start, stop, step):
 for i in range(2, 11, 2):

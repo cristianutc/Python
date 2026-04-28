@@ -12,7 +12,7 @@ print(f"Hola, {nombre}!")
 #Lo que el usuario ingresa con input() siempre es una cadena (str).
 # Si necesitas que el dato sea de otro tipo (por ejemplo, un número), debes convertirlo a ese tipo explícitamente.
 
-edad = input(f"¿Cuantos años tienes? \n {nombre}\n")
+edad = input(f"¿Cuantos años tienes? {nombre}\n")
 edad = int(edad) # Convertir de string a entero
 print(f"Tienes {edad} años.")
 
